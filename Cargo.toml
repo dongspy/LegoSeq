@@ -1,0 +1,18 @@
+[package]
+name = "legoseq"
+version = "0.1.0"
+edition = "2021"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+bio="1.0.0"
+serde="1.0.147"
+bio-types = "0.13.0"
+anyhow="1.0.66"
+clap = { version = "4.0.23", features = ["derive"] }
+rayon = "1.6.0"
+crossbeam-channel = ">=0.5"
+flate2 = ">=1.0"
+lazy_static = "*"
+csv = "*"

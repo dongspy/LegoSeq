@@ -1,0 +1,5 @@
+id,fq_file,seq_type,start,end,barcode_file,anchor_seq
+1,test/test.R1.fastq,placeholder,1,8,,
+2,test/test.R1.fastq,barcode,9,16,test/barcode.fasta,
+3,test/test.R2.fastq,placeholder,-1,-1,,
+4,test/test.R3.fastq,placeholder,-1,-1,,
