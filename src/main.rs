@@ -19,7 +19,7 @@ pub mod utils;
 
 #[derive(Debug, Deserialize)]
 struct Config {
-    id: String,
+    id: u8,
     fq_file: String,
     seq_type: String,
     start: isize,
@@ -92,6 +92,27 @@ fn get_barcode(path: &str) -> Result<HashMap<String, Vec<u8>>> {
     Ok(barcode_hash)
 }
 
+fn get_barcode_hash(
+    config_hash: &HashMap<String, Vec<Config>>,
+) -> Result<HashMap<String, HashMap<u8, HashMap<String, Vec<u8>>>>> {
+    let mut barcode_hash: HashMap<String, HashMap<u8, HashMap<String, Vec<u8>>>> = HashMap::new();
+    for (fq_file, config_vec) in config_hash.iter() {
+        for config in config_vec.iter() {
+            if &config.seq_type == "barcode" {
+                let mut subset_barcode_hash: HashMap<u8, HashMap<String, Vec<u8>>> = HashMap::new();
+                subset_barcode_hash.insert(
+                    config.id,
+                    get_barcode(config.barcode_file.as_ref().unwrap()).unwrap(),
+                );
+                barcode_hash
+                    .entry(fq_file.to_owned())
+                    .or_insert(subset_barcode_hash);
+            }
+        }
+    }
+    Ok(barcode_hash)
+}
+
 // fn get_seq_from_config(record:fastq::Record, config:Config) -> Result<()>{
 
 // }
@@ -104,6 +125,8 @@ fn main() -> Result<()> {
             .map(|(x, y)| (x.to_owned(), get_fastq_reader(x)))
             .collect::<HashMap<String, Box<dyn FastqRead>>>(),
     };
+    let barcode_hash = get_barcode_hash(&config_hash);
+    // dbg!(barcode_hash.unwrap());
 
     while let Some(rs) = record_set.next() {
         let record_hash = rs.unwrap();
@@ -111,6 +134,7 @@ fn main() -> Result<()> {
             println!("file: {}; read:{}", file, record.id());
             // let subseq = config_hash.entry(key);
             let config = config_hash.get(file).unwrap();
+
             let seq_type_str = String::from("placeholder");
             // dbg!(config);
             let test = config

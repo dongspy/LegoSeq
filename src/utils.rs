@@ -86,17 +86,19 @@ impl ReadInfo {
     }
 }
 
-fn get_read_best_index_local(
+pub fn get_read_best_index_local(
     index_hash: &HashMap<String, Vec<u8>>,
     seq: &[u8],
     max_mismatch: usize,
-) -> String {
+) -> Result<(String, usize, usize)> {
     let mut best_index = String::from("unknown");
     let mut max_dist = max_mismatch;
+    let mut align_start;
+    let mut align_end;
     for (sample, index_seq) in index_hash.into_iter() {
         let align_out = banded_local_align(&index_seq, seq);
-        let align_start = align_out.1;
-        let align_end = align_out.2;
+        align_start = align_out.1;
+        align_end = align_out.2;
         let seq_len = seq.len();
         if align_end + 10 > seq_len {
             continue;
@@ -108,5 +110,5 @@ fn get_read_best_index_local(
             best_index = sample.clone();
         }
     }
-    best_index
+    Ok((best_index, align_start, align_end))
 }
